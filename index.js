@@ -1,6 +1,12 @@
-const { Person } = require('./person')
+// const { Person } = require('./person')
+const dotenv = require('dotenv')
+const connectToDatabase = require('./src/database/connect')
 
-const person = new Person('Matheus')
+dotenv.config()
+
+connectToDatabase()
+
+// const person = new Person('Matheus')
 
 // require('./modules/path')
 // require('./modules/fs')

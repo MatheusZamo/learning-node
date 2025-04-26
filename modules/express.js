@@ -1,25 +1,72 @@
 const express = require('express')
+const UserModel = require('../src/models/user.model')
 
 const app = express()
 
-app.get('/home', (request, response) => {
-    response.status(200).send('<h1>Hello world!</h1>')
+app.use(express.json())
+
+app.use((request, response, next) => {
+    console.log(`Request Type: ${request.method}`)
+    console.log(`Content Type: ${request.headers["content-type"]}`)
+    console.log(`Date: ${new Date()}`)
+
+    next()
+})
+
+app.get('/users', async (request, response) => {
+   try {
+    const users = await UserModel.find({})
+
+    response.status(200).json(users)
+
+   } catch (error) {
+    response.status(500).send(error.message)
+   }
+})
+
+app.get('/users/:id', async (request, response) => {
+    try {
+        const id = request.params.id
+
+        const user = await UserModel.findById(id)
+        response.status(200).json(user)
+    } catch (error) {
+        response.status(500).send(error)
+    }
+})
+
+app.post('/users', async (request, response) => {
+    try {
+        const user =  await UserModel.create(request.body)
+
+        response.status(201).json(user)
+    } catch (error) {
+        response.status(500).send(error.message)
+    }
+})
+
+app.patch('/users/:id', async (request, response) => {
+    try {
+        const id = request.params.id
+
+        const user = await UserModel.findByIdAndUpdate(id, request.body, {new: true})
+        response.status(200).json(user)
+    } catch (error) {
+        response.status(500).send(error.message)
+    }
+})
+
+app.delete('/users/:id', async (request, response) => {
+    try{
+        const id = request.params.id
+
+        const user = await UserModel.findByIdAndDelete(id)
+        response.status(200).json(user)
+    } catch (error) {
+        response.status(500).send(error.message)
+    }
 })
 
 const port = 8080
 
 app.listen(port, () => console.log(`Rodando com Express na porta ${port}`))
-
-app.get('/users', (request, response) => {
-    const users = [
-        {
-            name: 'Ana Carolina',
-            email: 'AnaCarolina@.com'
-        },
-        {
-            name: 'Estevão Henrique',
-            email: 'EstevaoHenrique@.com'
-        }
-    ]
-    response.status(200).json(users)
-})
