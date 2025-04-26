@@ -5,12 +5,20 @@ const app = express()
 
 app.use(express.json())
 
+app.set('view engine', 'ejs')
+app.set('views', 'src/views')
+
 app.use((request, response, next) => {
     console.log(`Request Type: ${request.method}`)
     console.log(`Content Type: ${request.headers["content-type"]}`)
     console.log(`Date: ${new Date()}`)
 
     next()
+})
+
+app.get('/views/users', async (request, response) => {
+    const users = await UserModel.find({})
+    response.render('index', { users })
 })
 
 app.get('/users', async (request, response) => {
